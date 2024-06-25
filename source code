@@ -1,0 +1,207 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+interface StudentmanagementSystem{
+    void AddStudentt();
+
+    void ViewAllStudents();
+
+    void Searchstudentbyid();
+
+    void UpdatestudentInformation();
+
+    void Deletestudentbyid();
+
+    void Savetofile();
+    }
+
+abstract class Studentt implements StudentmanagementSystem {
+    public List<Student> students;
+
+    public void StudentmanagementSystem() {
+        this.students = new ArrayList<>();
+    }
+
+    public void AddStudentt(Student student) {
+        students.add(student);
+    }
+
+    public List<Student> viewAllStudents() {
+        return students;
+    }
+
+    public Student Searchstudentbyid(int id) {
+        for (Student student : students) {
+            if (student.getId() == id) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    public boolean UpdateStudentInformation(int id, String name, int age, String grade) {
+        Student student = Searchstudentbyid(id);
+        if (student != null) {
+            if (name != null) student.setName(name);
+            if (age > 0) student.setAge(age);
+            if (grade != null) student.setGrade(grade);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean Deletestudentbyid(int id) {
+        Student student = Searchstudentbyid(id);
+        if (student != null) {
+            students.remove(student);
+            return true;
+        }
+        return false;
+    }
+
+    public void Savetofile() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("result.txt"))) {
+            for (Student student : students) {
+                bw.write(student.toString());
+                bw.newLine();
+            }
+
+        } catch (IOException e) {
+            System.out.println("An error occurred when save to file " + e.getMessage());
+
+        }
+    }
+}
+public class StudentIMS2 {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        StudentManagementSystem sms = new StudentManagementSystem();
+
+        System.out.println("How many Students do you want to enter: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("Enter student id: ");
+            int id = sc.nextInt();
+            sc.nextLine();
+
+            System.out.println("Enter student name: ");
+            String name = sc.nextLine();
+
+            System.out.println("Enter student age: ");
+            int age = sc.nextInt();
+            sc.nextLine();
+
+            System.out.println("Enter student grade: ");
+            String grade = sc.nextLine();
+            sms.addStudent(new Student(id, name, age, grade));
+        }
+
+        while (true) {
+            System.out.println("1. Add new student");
+            System.out.println("2. View all students");
+            System.out.println("3. Search for a student by id");
+            System.out.println("4. Update student information");
+            System.out.println("5. Delete a student by id");
+            System.out.println("6. Data saved to file");
+            System.out.println("6. Exit");
+            System.out.println("Enter your choice:");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter student id: ");
+                    int id;
+                    id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println("Enter student name: ");
+                    String name;
+                    name = sc.nextLine();
+
+                    System.out.println("Enter student age: ");
+                    int age;
+                    age = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println("Enter student grade: ");
+                    String grade;
+                    grade = sc.nextLine();
+                    sms.addStudent(new Student(id, name, age, grade));
+                    break;
+
+                case 2:
+                    List<Student> students = sms.viewAllStudents();
+                    for (Student student : students) {
+                        System.out.println(student);
+                        sms.viewAllStudents();
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Search for a student by ID: ");
+                    id = sc.nextInt();
+                    sc.nextLine();
+                    Student student = sms.searchStudentById(id);
+                    if (student != null) {
+                        System.out.println(student);
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("Update Student Information: ");
+                    id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println("Enter new name (or press Enter to skip): ");
+                    name = sc.nextLine();
+
+                    System.out.println("Enter new age (or 0 to skip): ");
+                    age = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println("Enter new grade (or press Enter to skip): ");
+                    grade = sc.nextLine();
+
+                    if (sms.UpdateStudent(id, name, age, grade)) {
+                        System.out.println("Student updated.");
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Delete a student by ID: ");
+                    id = sc.nextInt();
+                    if (sms.deleteStudentbyid(id)) {
+                        System.out.println("Student deleted.");
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+
+                case 6:
+                    sms.savetofile();
+                    System.out.println("Data saved to file");
+                    break;
+
+                case 7:
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Please try again");
+
+            }
+        }
+    }
+}
