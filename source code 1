@@ -1,86 +1,74 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+package com.company2;
+
+import java.util.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-interface StudentmanagementSystem{
-    void AddStudentt();
+class Student {
+    private int id;
+    private String name;
+    private int age;
+    private String grade;
 
-    void ViewAllStudents();
-
-    void Searchstudentbyid();
-
-    void UpdatestudentInformation();
-
-    void Deletestudentbyid();
-
-    void Savetofile();
+    public Student(int id, String name, int age, String grade) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.grade = grade;
     }
 
-abstract class Studentt implements StudentmanagementSystem {
-    public List<Student> students;
-
-    public void StudentmanagementSystem() {
-        this.students = new ArrayList<>();
+    // Getters and Setters
+    public int getId() {
+        return id;
     }
 
-    public void AddStudentt(Student student) {
-        students.add(student);
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public List<Student> viewAllStudents() {
-        return students;
+    public String getName() {
+        return name;
     }
 
-    public Student Searchstudentbyid(int id) {
-        for (Student student : students) {
-            if (student.getId() == id) {
-                return student;
-            }
-        }
-        return null;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public boolean UpdateStudentInformation(int id, String name, int age, String grade) {
-        Student student = Searchstudentbyid(id);
-        if (student != null) {
-            if (name != null) student.setName(name);
-            if (age > 0) student.setAge(age);
-            if (grade != null) student.setGrade(grade);
-            return true;
-        }
-        return false;
+    public int getAge() {
+        return age;
     }
 
-    public boolean Deletestudentbyid(int id) {
-        Student student = Searchstudentbyid(id);
-        if (student != null) {
-            students.remove(student);
-            return true;
-        }
-        return false;
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    public void Savetofile() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("result.txt"))) {
-            for (Student student : students) {
-                bw.write(student.toString());
-                bw.newLine();
-            }
+    public String getGrade() {
+        return grade;
+    }
 
-        } catch (IOException e) {
-            System.out.println("An error occurred when save to file " + e.getMessage());
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
 
-        }
+    @Override
+    public String toString() {
+        return id + "," + name + "," + age + "," + grade;
+    }
+
+    public static Student fromString(String data) {
+        String[] parts = data.split(",");
+        int id = Integer.parseInt(parts[0]);
+        String name = parts[1];
+        int age = Integer.parseInt(parts[2]);
+        String grade = parts[3];
+        return new Student(id, name, age, grade);
     }
 }
-public class StudentIMS2 {
+public class SIMS {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         StudentManagementSystem sms = new StudentManagementSystem();
-
         System.out.println("How many Students do you want to enter: ");
         int n = sc.nextInt();
         sc.nextLine();
@@ -102,14 +90,15 @@ public class StudentIMS2 {
             sms.addStudent(new Student(id, name, age, grade));
         }
 
+
         while (true) {
             System.out.println("1. Add new student");
             System.out.println("2. View all students");
-            System.out.println("3. Search for a student by id");
+            System.out.println("3. Search for a student by ID");
             System.out.println("4. Update student information");
-            System.out.println("5. Delete a student by id");
-            System.out.println("6. Data saved to file");
-            System.out.println("6. Exit");
+            System.out.println("5. Delete a student by ID");
+            System.out.println("6. Save data to file");
+            System.out.println("7. Exit");
             System.out.println("Enter your choice:");
 
             int choice = sc.nextInt();
@@ -118,22 +107,19 @@ public class StudentIMS2 {
             switch (choice) {
                 case 1:
                     System.out.println("Enter student id: ");
-                    int id;
-                    id = sc.nextInt();
+                    int id = sc.nextInt();
                     sc.nextLine();
 
                     System.out.println("Enter student name: ");
-                    String name;
-                    name = sc.nextLine();
+                    String name = sc.nextLine();
 
                     System.out.println("Enter student age: ");
-                    int age;
-                    age = sc.nextInt();
+                    int age = sc.nextInt();
                     sc.nextLine();
 
                     System.out.println("Enter student grade: ");
-                    String grade;
-                    grade = sc.nextLine();
+                    String grade = sc.nextLine();
+
                     sms.addStudent(new Student(id, name, age, grade));
                     break;
 
@@ -141,12 +127,11 @@ public class StudentIMS2 {
                     List<Student> students = sms.viewAllStudents();
                     for (Student student : students) {
                         System.out.println(student);
-                        sms.viewAllStudents();
                     }
                     break;
 
                 case 3:
-                    System.out.println("Search for a student by ID: ");
+                    System.out.println("Enter student id to search: ");
                     id = sc.nextInt();
                     sc.nextLine();
                     Student student = sms.searchStudentById(id);
@@ -158,7 +143,7 @@ public class StudentIMS2 {
                     break;
 
                 case 4:
-                    System.out.println("Update Student Information: ");
+                    System.out.println("Enter student id to update: ");
                     id = sc.nextInt();
                     sc.nextLine();
 
@@ -172,7 +157,7 @@ public class StudentIMS2 {
                     System.out.println("Enter new grade (or press Enter to skip): ");
                     grade = sc.nextLine();
 
-                    if (sms.UpdateStudent(id, name, age, grade)) {
+                    if (sms.updateStudentInformation(id, name, age, grade)) {
                         System.out.println("Student updated.");
                     } else {
                         System.out.println("Student not found.");
@@ -180,9 +165,10 @@ public class StudentIMS2 {
                     break;
 
                 case 5:
-                    System.out.println("Delete a student by ID: ");
+                    System.out.println("Enter student id to delete: ");
                     id = sc.nextInt();
-                    if (sms.deleteStudentbyid(id)) {
+                    sc.nextLine();
+                    if (sms.deleteStudentById(id)) {
                         System.out.println("Student deleted.");
                     } else {
                         System.out.println("Student not found.");
@@ -190,8 +176,8 @@ public class StudentIMS2 {
                     break;
 
                 case 6:
-                    sms.savetofile();
-                    System.out.println("Data saved to file");
+                    sms.saveToFile();
+                    System.out.println("Data saved to file.");
                     break;
 
                 case 7:
@@ -199,8 +185,7 @@ public class StudentIMS2 {
                     return;
 
                 default:
-                    System.out.println("Please try again");
-
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
     }
